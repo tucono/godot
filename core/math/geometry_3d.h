@@ -124,6 +124,19 @@ public:
 	}
 
 	static inline bool segment_intersects_sphere(const Vector3 &p_from, const Vector3 &p_to, const Vector3 &p_sphere_pos, real_t p_sphere_radius, Vector3 *r_res = nullptr, Vector3 *r_norm = nullptr) {
+		// Check if internal
+		if (p_from.length() < p_sphere_radius){
+			// Both points internal -> no intersection
+			if (p_to.length() < p_sphere_radius){
+				return false;
+			}
+			bool intersects = segment_intersects_sphere(p_to, p_from, p_sphere_pos, p_sphere_radius, r_res, r_norm);
+			if (intersects && r_norm){
+				(*r_norm) = -(*r_norm);
+			}
+			return intersects;
+		}
+
 		Vector3 sphere_pos = p_sphere_pos - p_from;
 		Vector3 rel = (p_to - p_from);
 		real_t rel_l = rel.length();
