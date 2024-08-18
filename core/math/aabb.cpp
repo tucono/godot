@@ -194,6 +194,12 @@ bool AABB::intersects_segment(const Vector3 &p_from, const Vector3 &p_to, Vector
 	real_t min = 0, max = 1;
 	int axis = 0;
 	real_t sign = 0;
+    // Original logic largely inverts when starting from inside.
+    bool starts_inside = has_point(p_from);
+    if (starts_inside){
+        min = 1;
+        max = 0;
+    }
 
 	for (int i = 0; i < 3; i++) {
 		real_t seg_from = p_from[i];
@@ -221,18 +227,28 @@ bool AABB::intersects_segment(const Vector3 &p_from, const Vector3 &p_to, Vector
 			cmax = (seg_to < box_begin) ? (box_begin - seg_from) / length : 1;
 			csign = 1.0;
 		}
-
-		if (cmin > min) {
-			min = cmin;
-			axis = i;
-			sign = csign;
-		}
-		if (cmax < max) {
-			max = cmax;
-		}
-		if (max < min) {
-			return false;
-		}
+        
+        if (starts_inside){ // Inside-out - only 1 intersection (cmax)
+            cmin = cmax;
+            if (cmin < min) {
+                min = cmin;
+                axis = i;
+                sign = csign;
+            }
+        }
+        else { // Outside-in
+            if (cmin > min) {
+                min = cmin;
+                axis = i;
+                sign = csign;
+            }
+            if (cmax < max) {
+                max = cmax;
+            }
+            if (max < min) {
+                return false;
+            }
+        }
 	}
 
 	Vector3 rel = p_to - p_from;
