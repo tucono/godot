@@ -177,7 +177,44 @@ public:
 		return true;
 	}
 
+	static inline bool point_inside_cylinder(const Vector3 &p, real_t p_height, real_t p_radius, int p_cylinder_axis){
+		bool inside = false;
+		switch (p_cylinder_axis){
+			case 0:
+				if (Math::abs(p.x) < p_height * 0.5) {
+					inside = Vector3(0.0, p.y, p.z).length() < p_radius;
+				}
+				break;
+			case 1:
+				if (Math::abs(p.y) < p_height * 0.5) {
+					inside = Vector3(p.x, 0.0, p.z).length() < p_radius;
+				}
+				break;
+			case 2:
+				if (Math::abs(p.z) < p_height * 0.5) {
+					inside = Vector3(p.x, p.y, 0.0).length() < p_radius;
+				}
+				break;
+			default: // Unknown p_cylinder_axis
+				break;
+		}
+		return inside;
+	}
+
 	static inline bool segment_intersects_cylinder(const Vector3 &p_from, const Vector3 &p_to, real_t p_height, real_t p_radius, Vector3 *r_res = nullptr, Vector3 *r_norm = nullptr, int p_cylinder_axis = 2) {
+		// Origin inside cylinder
+		if (point_inside_cylinder(p_from, p_height, p_radius, p_cylinder_axis)){
+			// Endpoints inside cylinder - no intersection
+			if (point_inside_cylinder(p_to, p_height, p_radius, p_cylinder_axis)){
+				return false;
+			}
+			bool intersects = segment_intersects_cylinder(p_to, p_from, p_height, p_radius, r_res, r_norm, p_cylinder_axis);
+			if (intersects && r_norm){
+				(*r_norm) = -(*r_norm);
+			}
+			return intersects;
+		}
+
 		Vector3 rel = (p_to - p_from);
 		real_t rel_l = rel.length();
 		if (rel_l < (real_t)CMP_EPSILON) {
