@@ -152,7 +152,11 @@ bool GodotPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_parame
 		int shape_face_index = -1;
 
 		if (shape->intersect_point(local_from)) {
-			if (p_parameters.hit_from_inside) {
+			if (!p_parameters.hit_from_inside) {
+				// Ignore shape when starting inside.
+				continue;
+			}
+			else if (!p_parameters.hit_back_faces){
 				// Hit shape at starting point.
 				min_d = 0;
 				res_point = begin;
@@ -161,9 +165,6 @@ bool GodotPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_parame
 				res_obj = col_obj;
 				collided = true;
 				break;
-			} else {
-				// Ignore shape when starting inside.
-				continue;
 			}
 		}
 
