@@ -986,7 +986,7 @@ bool GodotConvexPolygonShape3D::intersect_segment(const Vector3 &p_begin, const 
 	bool col = false;
 
 	for (int i = 0; i < fc; i++) {
-		if (faces[i].plane.normal.dot(n) > 0) {
+		if (faces[i].plane.normal.dot(n) > 0 && !p_hit_back_faces) { // TODO : Validate that hitting back faces will properly obtain result
 			continue; //opposing face
 		}
 
