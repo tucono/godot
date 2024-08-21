@@ -552,6 +552,19 @@ void GodotCapsuleShape3D::get_supports(const Vector3 &p_normal, int p_max, Vecto
 }
 
 bool GodotCapsuleShape3D::intersect_segment(const Vector3 &p_begin, const Vector3 &p_end, Vector3 &r_result, Vector3 &r_normal, int &r_face_index, bool p_hit_back_faces) const {
+	// Check if segment begins inside capsule
+	if (GodotCapsuleShape3D::intersect_point(p_begin)){
+		// Only perform intersection if we hit back faces and end segment is outside capsule
+		if (p_hit_back_faces && !(GodotCapsuleShape3D::intersect_point(p_end))){
+			bool collided = GodotCapsuleShape3D::intersect_segment(p_end, p_begin, r_result, r_normal, r_face_index, p_hit_back_faces);
+			r_normal = -r_normal;
+			return collided;
+		}
+		else{
+			return false;
+		}
+	}
+
 	Vector3 norm = (p_end - p_begin).normalized();
 	real_t min_d = 1e20;
 
@@ -976,6 +989,18 @@ void GodotConvexPolygonShape3D::get_supports(const Vector3 &p_normal, int p_max,
 }
 
 bool GodotConvexPolygonShape3D::intersect_segment(const Vector3 &p_begin, const Vector3 &p_end, Vector3 &r_result, Vector3 &r_normal, int &r_face_index, bool p_hit_back_faces) const {
+	// Check if starting inside shape
+	if (GodotConvexPolygonShape3D::intersect_point(p_begin)){
+		// Only perform intersection if we hit back faces and end segment is outside shape
+		if (p_hit_back_faces && !(GodotConvexPolygonShape3D::intersect_point(p_end))){
+			bool col = intersect_segment(p_end, p_begin, r_result, r_normal, r_face_index, p_hit_back_faces);
+			r_normal = -r_normal;
+			return col;
+		}
+		else{
+			return false;
+		}
+	}
 	const Geometry3D::MeshData::Face *faces = mesh.faces.ptr();
 	int fc = mesh.faces.size();
 
@@ -986,7 +1011,7 @@ bool GodotConvexPolygonShape3D::intersect_segment(const Vector3 &p_begin, const 
 	bool col = false;
 
 	for (int i = 0; i < fc; i++) {
-		if (faces[i].plane.normal.dot(n) > 0 && !p_hit_back_faces) { // TODO : Validate that hitting back faces will properly obtain result
+		if (faces[i].plane.normal.dot(n) > 0) {
 			continue; //opposing face
 		}
 
