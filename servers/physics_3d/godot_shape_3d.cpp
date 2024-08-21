@@ -419,7 +419,17 @@ void GodotBoxShape3D::get_supports(const Vector3 &p_normal, int p_max, Vector3 *
 
 bool GodotBoxShape3D::intersect_segment(const Vector3 &p_begin, const Vector3 &p_end, Vector3 &r_result, Vector3 &r_normal, int &r_face_index, bool p_hit_back_faces) const {
 	AABB aabb_ext(-half_extents, half_extents * 2.0);
-
+		if (aabb_ext.has_point(p_begin)){
+			if (aabb_ext.has_point(p_end)){
+				return false; // Contains both points - no intersection
+			}
+			// Swap endpoints and invert normal
+			bool intersects = GodotBoxShape3D::intersect_segment(p_end, p_begin, r_result, r_normal, r_face_index, p_hit_back_faces);
+			if(intersects){ // Expect this should always intersect.
+				r_normal = -r_normal;
+			}
+			return intersects;
+		}
 	return aabb_ext.intersects_segment(p_begin, p_end, &r_result, &r_normal);
 }
 
@@ -557,7 +567,9 @@ bool GodotCapsuleShape3D::intersect_segment(const Vector3 &p_begin, const Vector
 		// Only perform intersection if we hit back faces and end segment is outside capsule
 		if (p_hit_back_faces && !(GodotCapsuleShape3D::intersect_point(p_end))){
 			bool collided = GodotCapsuleShape3D::intersect_segment(p_end, p_begin, r_result, r_normal, r_face_index, p_hit_back_faces);
-			r_normal = -r_normal;
+			if (collided){
+				r_normal = -r_normal;
+			}
 			return collided;
 		}
 		else{
@@ -994,7 +1006,9 @@ bool GodotConvexPolygonShape3D::intersect_segment(const Vector3 &p_begin, const 
 		// Only perform intersection if we hit back faces and end segment is outside shape
 		if (p_hit_back_faces && !(GodotConvexPolygonShape3D::intersect_point(p_end))){
 			bool col = intersect_segment(p_end, p_begin, r_result, r_normal, r_face_index, p_hit_back_faces);
-			r_normal = -r_normal;
+			if (col){
+				r_normal = -r_normal;
+			}
 			return col;
 		}
 		else{

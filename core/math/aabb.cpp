@@ -192,18 +192,6 @@ bool AABB::intersects_segment(const Vector3 &p_from, const Vector3 &p_to, Vector
 	}
 #endif
 
-	if (has_point(p_from)){
-		if (has_point(p_to)){
-			return false; // Contains both points - no intersection
-		}
-		// Swap endpoints and invert normal
-		bool intersects = intersects_segment(p_to, p_from, r_intersection_point, r_normal);
-		if(intersects && r_normal){ // Expect this should always intersect.
-			(*r_normal) = -(*r_normal);
-		}
-		return intersects;
-	}
-
 	real_t min = 0, max = 1;
 	int axis = 0;
 	real_t sign = 0;
