@@ -158,7 +158,7 @@ bool GodotPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_parame
 				continue;
 			}
 			else if (!p_parameters.hit_back_faces || shape->intersect_point(local_to)){
-				// Hit shape at starting point. If hit back faces is on then endpoint is inside as well (no surface collision)
+				// Hit shape at starting point. If hit back faces is on then endpoint is inside as well (no surface collision).
 				min_d = 0;
 				res_point = begin;
 				res_normal = Vector3();
@@ -168,7 +168,7 @@ bool GodotPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_parame
 				break;
 			}
 			else{
-				// Surface collision from inside. Swap to and from to get collision point
+				// Surface collision from inside. Swap to and from to get collision point.
 				Vector3 tmp = local_from;
 				local_from = local_to;
 				local_to = tmp;
@@ -176,7 +176,7 @@ bool GodotPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_parame
 		}
 
 		if (shape->intersect_segment(local_from, local_to, shape_point, shape_normal, shape_face_index, p_parameters.hit_back_faces)) {
-			if (inside_hit){ // Invert normal if internal collision to represent an internal surface hit
+			if (inside_hit){ // Invert normal if internal collision to represent an internal surface hit.
 				shape_normal = -shape_normal;
 			}
 			Transform3D xform = col_obj->get_transform() * col_obj->get_shape_transform(shape_idx);

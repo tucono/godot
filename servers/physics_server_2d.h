@@ -138,6 +138,7 @@ public:
 		bool collide_with_areas = false;
 
 		bool hit_from_inside = false;
+		bool hit_back_faces = false;
 	};
 
 	struct RayResult {

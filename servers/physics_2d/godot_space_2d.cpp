@@ -154,9 +154,13 @@ bool GodotPhysicsDirectSpaceState2D::intersect_ray(const RayParameters &p_parame
 
 		Vector2 shape_point, shape_normal;
 
-		if (shape->contains_point(local_from)) {
-			if (p_parameters.hit_from_inside) {
-				// Hit shape at starting point.
+		bool inside_hit = shape->contains_point(local_from);
+		if (inside_hit) {
+			if (!p_parameters.hit_from_inside) {
+				// Ignore shape when starting inside.
+				continue;
+			} else if (!p_parameters.hit_back_faces || shape->contains_point(local_to)){
+				// Hit shape at starting point. If hit back face is on then endpoint is inside as well (no surface collision).
 				min_d = 0;
 				res_point = begin;
 				res_normal = Vector2();
@@ -165,12 +169,17 @@ bool GodotPhysicsDirectSpaceState2D::intersect_ray(const RayParameters &p_parame
 				collided = true;
 				break;
 			} else {
-				// Ignore shape when starting inside.
-				continue;
+				// Surface collision from inside. Swap to and from to get collision point.
+				Vector2 tmp = local_from;
+				local_from = local_to;
+				local_to = tmp;
 			}
 		}
 
 		if (shape->intersect_segment(local_from, local_to, shape_point, shape_normal)) {
+			if (inside_hit){ // Invert normal if internal collision to represent an internal surface hit.
+				shape_normal = -shape_normal;
+			}
 			Transform2D xform = col_obj->get_transform() * col_obj->get_shape_transform(shape_idx);
 			shape_point = xform.xform(shape_point);
 

@@ -55,6 +55,7 @@ class RayCast2D : public Node2D {
 	bool collide_with_bodies = true;
 
 	bool hit_from_inside = false;
+	bool hit_back_faces = false;
 
 	void _draw_debug_shape();
 
@@ -72,6 +73,9 @@ public:
 
 	void set_hit_from_inside(bool p_enable);
 	bool is_hit_from_inside_enabled() const;
+
+	void set_hit_back_faces(bool p_enable);
+	bool is_hit_back_faces_enabled() const;
 
 	void set_enabled(bool p_enabled);
 	bool is_enabled() const;

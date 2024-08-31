@@ -316,6 +316,14 @@ bool RayCast2D::is_hit_from_inside_enabled() const {
 	return hit_from_inside;
 }
 
+void RayCast2D::set_hit_back_faces(bool p_enabled) {
+	hit_back_faces = p_enabled;
+}
+
+bool RayCast2D::is_hit_back_faces_enabled() const {
+	return hit_back_faces;
+}
+
 void RayCast2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &RayCast2D::set_enabled);
 	ClassDB::bind_method(D_METHOD("is_enabled"), &RayCast2D::is_enabled);
@@ -358,11 +366,15 @@ void RayCast2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_hit_from_inside", "enable"), &RayCast2D::set_hit_from_inside);
 	ClassDB::bind_method(D_METHOD("is_hit_from_inside_enabled"), &RayCast2D::is_hit_from_inside_enabled);
 
+	ClassDB::bind_method(D_METHOD("set_hit_back_faces", "enable"), &RayCast2D::set_hit_back_faces);
+	ClassDB::bind_method(D_METHOD("is_hit_back_faces_enabled"), &RayCast2D::is_hit_back_faces_enabled);
+
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enabled"), "set_enabled", "is_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "exclude_parent"), "set_exclude_parent_body", "get_exclude_parent_body");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "target_position", PROPERTY_HINT_NONE, "suffix:px"), "set_target_position", "get_target_position");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_collision_mask", "get_collision_mask");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hit_from_inside"), "set_hit_from_inside", "is_hit_from_inside_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hit_back_faces"), "set_hit_back_faces", "is_hit_back_faces_enabled");
 
 	ADD_GROUP("Collide With", "collide_with");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "collide_with_areas", PROPERTY_HINT_LAYERS_3D_PHYSICS), "set_collide_with_areas", "is_collide_with_areas_enabled");
