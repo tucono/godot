@@ -332,25 +332,24 @@ void PhysicsShapeQueryParameters2D::_bind_methods() {
 TypedArray<Dictionary> PhysicsDirectSpaceState2D::_intersect_ray_multiple(const Ref<PhysicsRayQueryParameters2D> &p_ray_query) {
 	ERR_FAIL_COND_V(!p_ray_query.is_valid(), TypedArray<Dictionary>());
 
-	Vector<RayResult> results;
-	bool res = intersect_ray_multiple(p_ray_query->get_parameters(), results);
+	MultiRayResult result;
+	bool res = intersect_ray_multiple(p_ray_query->get_parameters(), result);
 
 	if (!res) {
 		return TypedArray<Dictionary>();
 	}
 
 	TypedArray<Dictionary> r;
-	int rc = results.size();
+	int rc = result.collisions.size();
 	r.resize(rc);
 	for (int i = 0; i < rc; i++) {
 		Dictionary d;
-		RayResult result = results.get(i);
-		d["position"] = result.position;
-		d["normal"] = result.normal;
-		d["collider_id"] = result.collider_id;
-		d["collider"] = result.collider;
-		d["shape"] = result.shape;
-		d["rid"] = result.rid;
+		d["position"] = result.collisions.get(i).position;
+		d["normal"] = result.collisions.get(i).normal;
+		d["collider_id"] = result.collisions.get(i).collider_id;
+		d["collider"] = result.collisions.get(i).collider;
+		d["shape"] = result.collisions.get(i).shape;
+		d["rid"] = result.collisions.get(i).rid;
 	}
 	return r;
 }

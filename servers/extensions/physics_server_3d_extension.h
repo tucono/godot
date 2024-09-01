@@ -112,7 +112,7 @@ public:
 	PhysicsDirectBodyState3DExtension();
 };
 
-typedef Vector<PhysicsDirectSpaceState3D::RayResult> PhysicsServer3DExtensionMultiRayResult;
+typedef PhysicsDirectSpaceState3D::MultiRayResult PhysicsServer3DExtensionMultiRayResult;
 typedef PhysicsDirectSpaceState3D::RayResult PhysicsServer3DExtensionRayResult;
 typedef PhysicsDirectSpaceState3D::ShapeResult PhysicsServer3DExtensionShapeResult;
 typedef PhysicsDirectSpaceState3D::ShapeRestInfo PhysicsServer3DExtensionShapeRestInfo;
@@ -141,10 +141,10 @@ protected:
 	GDVIRTUAL2RC(Vector3, _get_closest_point_to_object_volume, RID, const Vector3 &)
 
 public:
-	virtual bool intersect_ray_multiple(const RayParameters &p_parameters, Vector<RayResult> &r_results) override {
+	virtual bool intersect_ray_multiple(const RayParameters &p_parameters, MultiRayResult &r_result) override {
 		exclude = &p_parameters.exclude;
 		bool ret = false;
-		GDVIRTUAL_REQUIRED_CALL(_intersect_ray_multiple, p_parameters.from, p_parameters.to, p_parameters.collision_mask, p_parameters.collide_with_bodies, p_parameters.collide_with_areas, p_parameters.hit_from_inside, p_parameters.hit_back_faces, p_parameters.pick_ray, &r_results, ret);
+		GDVIRTUAL_REQUIRED_CALL(_intersect_ray_multiple, p_parameters.from, p_parameters.to, p_parameters.collision_mask, p_parameters.collide_with_bodies, p_parameters.collide_with_areas, p_parameters.hit_from_inside, p_parameters.hit_back_faces, p_parameters.pick_ray, &r_result, ret);
 		exclude = nullptr;
 		return ret;
 	}

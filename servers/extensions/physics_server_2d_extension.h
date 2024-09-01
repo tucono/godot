@@ -110,7 +110,7 @@ public:
 	PhysicsDirectBodyState2DExtension();
 };
 
-typedef Vector<PhysicsDirectSpaceState2D::RayResult> PhysicsServer2DExtensionMultiRayResult;
+typedef PhysicsDirectSpaceState2D::MultiRayResult PhysicsServer2DExtensionMultiRayResult;
 typedef PhysicsDirectSpaceState2D::RayResult PhysicsServer2DExtensionRayResult;
 typedef PhysicsDirectSpaceState2D::ShapeResult PhysicsServer2DExtensionShapeResult;
 typedef PhysicsDirectSpaceState2D::ShapeRestInfo PhysicsServer2DExtensionShapeRestInfo;
@@ -138,10 +138,10 @@ protected:
 	GDVIRTUAL8R(bool, _rest_info, RID, const Transform2D &, const Vector2 &, real_t, uint32_t, bool, bool, GDExtensionPtr<PhysicsServer2DExtensionShapeRestInfo>)
 
 public:
-	virtual bool intersect_ray_multiple(const RayParameters &p_parameters, Vector<RayResult> &r_results) override {
+	virtual bool intersect_ray_multiple(const RayParameters &p_parameters, MultiRayResult &r_result) override {
 		exclude = &p_parameters.exclude;
 		bool ret = false;
-		GDVIRTUAL_REQUIRED_CALL(_intersect_ray_multiple, p_parameters.from, p_parameters.to, p_parameters.collision_mask, p_parameters.collide_with_bodies, p_parameters.collide_with_areas, p_parameters.hit_from_inside, &r_results, ret);
+		GDVIRTUAL_REQUIRED_CALL(_intersect_ray_multiple, p_parameters.from, p_parameters.to, p_parameters.collision_mask, p_parameters.collide_with_bodies, p_parameters.collide_with_areas, p_parameters.hit_from_inside, &r_result, ret);
 		exclude = nullptr;
 		return ret;
 	}

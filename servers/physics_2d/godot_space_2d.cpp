@@ -135,7 +135,7 @@ _FORCE_INLINE_ static void _set_multiple_ray_result(Vector<PhysicsDirectSpaceSta
 	r_result.collider = collider;
 }
 
-bool GodotPhysicsDirectSpaceState2D::intersect_ray_multiple(const RayParameters &p_parameters, Vector<RayResult> &r_results) {
+bool GodotPhysicsDirectSpaceState2D::intersect_ray_multiple(const RayParameters &p_parameters, MultiRayResult &r_result) {
 	ERR_FAIL_COND_V(space->locked, false);
 
 	Vector2 begin, end;
@@ -150,7 +150,7 @@ bool GodotPhysicsDirectSpaceState2D::intersect_ray_multiple(const RayParameters 
 
 	Vector2 res_normal;
 
-	r_results.resize(amount);
+	r_result.collisions.resize(amount);
 	int n_collisions = 0;
 	for (int i = 0; i < amount; i++) {
 		if (!_can_collide_with(space->intersection_query_results[i], p_parameters.collision_mask, p_parameters.collide_with_bodies, p_parameters.collide_with_areas)) {
@@ -176,7 +176,7 @@ bool GodotPhysicsDirectSpaceState2D::intersect_ray_multiple(const RayParameters 
 		if (shape->contains_point(local_from)) {
 			if (p_parameters.hit_from_inside) {
 				// Hit shape at starting point.
-				_set_multiple_ray_result(r_results, n_collisions, begin, Vector2(), col_obj, shape_idx);
+				_set_multiple_ray_result(r_result.collisions, n_collisions, begin, Vector2(), col_obj, shape_idx);
 				n_collisions += 1;
 				continue;
 			} else {
@@ -190,21 +190,21 @@ bool GodotPhysicsDirectSpaceState2D::intersect_ray_multiple(const RayParameters 
 			Transform2D xform = col_obj->get_transform() * col_obj->get_shape_transform(shape_idx);
 			shape_point = xform.xform(shape_point);
 			res_normal = inv_xform.basis_xform_inv(shape_normal).normalized();
-			_set_multiple_ray_result(r_results, n_collisions, shape_point, res_normal, col_obj, shape_idx);
+			_set_multiple_ray_result(r_result.collisions, n_collisions, shape_point, res_normal, col_obj, shape_idx);
 			n_collisions += 1;
 		}
 	}
 
 	// Reduce size of r_results to n_collisions so invalid data is not propagated.
-	r_results.resize(n_collisions);
+	r_result.collisions.resize(n_collisions);
 	return n_collisions > 0;
 }
 
 bool GodotPhysicsDirectSpaceState2D::intersect_ray(const RayParameters &p_parameters, RayResult &r_result) {
 	ERR_FAIL_COND_V(space->locked, false);
 
-	Vector<RayResult> multi_result;
-	bool res = intersect_ray_multiple(p_parameters, multi_result);
+	MultiRayResult ret;
+	bool res = intersect_ray_multiple(p_parameters, ret);
 
 	if (!res) {
 		return false;
@@ -216,9 +216,9 @@ bool GodotPhysicsDirectSpaceState2D::intersect_ray(const RayParameters &p_parame
 	Vector2 delta;
 	real_t min_d = -1.0f;
 	int min_idx = 0;
-	int n_collisions = multi_result.size();
+	int n_collisions = ret.collisions.size();
 	for (int i = 0; i < n_collisions; i++) {
-		shape_point = multi_result.get(i).position;
+		shape_point = ret.collisions.get(i).position;
 		delta = shape_point - p_parameters.from;
 		ld = delta.length_squared();
 		if (min_d < 0.0 || ld < min_d) {
@@ -226,7 +226,7 @@ bool GodotPhysicsDirectSpaceState2D::intersect_ray(const RayParameters &p_parame
 			min_idx = i;
 		}
 	}
-	r_result = multi_result.get(min_idx);
+	r_result = ret.collisions.get(min_idx);
 	return true;
 }
 

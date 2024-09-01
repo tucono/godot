@@ -150,7 +150,11 @@ public:
 		int shape = 0;
 	};
 
-	virtual bool intersect_ray_multiple(const RayParameters &p_parameters, Vector<RayResult> &r_results) = 0;
+	struct MultiRayResult {
+		Vector<RayResult> collisions;
+	};
+
+	virtual bool intersect_ray_multiple(const RayParameters &p_parameters, MultiRayResult &r_result) = 0;
 	virtual bool intersect_ray(const RayParameters &p_parameters, RayResult &r_result) = 0;
 
 	struct ShapeResult {

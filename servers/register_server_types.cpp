@@ -274,6 +274,7 @@ void register_server_types() {
 	GDREGISTER_VIRTUAL_CLASS(PhysicsDirectBodyState2DExtension);
 	GDREGISTER_VIRTUAL_CLASS(PhysicsDirectSpaceState2DExtension);
 
+	GDREGISTER_NATIVE_STRUCT(PhysicsServer2DExtensionMultiRayResult, "Vector<PhysicsServer2DExtensionRayResult> collisions");
 	GDREGISTER_NATIVE_STRUCT(PhysicsServer2DExtensionRayResult, "Vector2 position;Vector2 normal;RID rid;ObjectID collider_id;Object *collider;int shape");
 	GDREGISTER_NATIVE_STRUCT(PhysicsServer2DExtensionShapeResult, "RID rid;ObjectID collider_id;Object *collider;int shape");
 	GDREGISTER_NATIVE_STRUCT(PhysicsServer2DExtensionShapeRestInfo, "Vector2 point;Vector2 normal;RID rid;ObjectID collider_id;int shape;Vector2 linear_velocity");
@@ -307,6 +308,7 @@ void register_server_types() {
 	GDREGISTER_VIRTUAL_CLASS(PhysicsDirectSpaceState3DExtension)
 	GDREGISTER_VIRTUAL_CLASS(PhysicsServer3DRenderingServerHandler)
 
+	GDREGISTER_NATIVE_STRUCT(PhysicsServer3DExtensionMultiRayResult, "Vector<PhysicsServer3DExtensionRayResult> collisions");
 	GDREGISTER_NATIVE_STRUCT(PhysicsServer3DExtensionRayResult, "Vector3 position;Vector3 normal;RID rid;ObjectID collider_id;Object *collider;int shape;int face_index");
 	GDREGISTER_NATIVE_STRUCT(PhysicsServer3DExtensionShapeResult, "RID rid;ObjectID collider_id;Object *collider;int shape");
 	GDREGISTER_NATIVE_STRUCT(PhysicsServer3DExtensionShapeRestInfo, "Vector3 point;Vector3 normal;RID rid;ObjectID collider_id;int shape;Vector3 linear_velocity");
