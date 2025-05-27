@@ -311,10 +311,11 @@ void NavMeshQueries3D::_query_task_build_path_corridor(NavMeshPathQueryTask3D &p
 	real_t distance_to_reachable_end = FLT_MAX;
 	bool is_reachable = true;
 	real_t poly_enter_cost = 0.0;
-
 	while (true) {
 		const NavigationPoly &least_cost_poly = navigation_polys[least_cost_id];
-		real_t poly_travel_cost = least_cost_poly.poly->owner->get_travel_cost();
+		// real_t poly_travel_cost = least_cost_poly.poly->owner->get_travel_cost();
+		real_t poly_travel_cost = least_cost_poly.poly->owner->get_travel_cost() * least_cost_poly.poly->travel_cost;
+		poly_enter_cost = least_cost_poly.poly->enter_cost;
 
 		// Takes the current least_cost_poly neighbors (iterating over its edges) and compute the traveled_distance.
 		for (const Edge &edge : least_cost_poly.poly->edges) {
@@ -342,7 +343,8 @@ void NavMeshQueries3D::_query_task_build_path_corridor(NavMeshPathQueryTask3D &p
 					neighbor_poly.traveled_distance = new_traveled_distance;
 					neighbor_poly.distance_to_destination =
 							new_entry.distance_to(end_point) *
-							connection_owner->get_travel_cost();
+							connection_owner->get_travel_cost() *
+							connection.polygon->travel_cost;
 					neighbor_poly.entry = new_entry;
 
 					if (neighbor_poly.traversable_poly_index != traversable_polys.INVALID_INDEX) {
@@ -431,7 +433,7 @@ void NavMeshQueries3D::_query_task_build_path_corridor(NavMeshPathQueryTask3D &p
 			}
 
 			if (navigation_polys[least_cost_id].poly->owner->get_self() != least_cost_poly.poly->owner->get_self()) {
-				poly_enter_cost = least_cost_poly.poly->owner->get_enter_cost();
+				poly_enter_cost = least_cost_poly.poly->owner->get_enter_cost() + least_cost_poly.poly->enter_cost;
 			}
 		}
 	}

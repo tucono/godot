@@ -104,6 +104,9 @@ struct Polygon {
 	/// The edges of this `Polygon`
 	LocalVector<Edge> edges;
 
+	real_t enter_cost = 0.0;
+	real_t travel_cost = 1.0;
+
 	real_t surface_area = 0.0;
 };
 
