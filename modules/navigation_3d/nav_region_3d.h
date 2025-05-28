@@ -58,6 +58,8 @@ class NavRegion3D : public NavBase3D {
 	RWLock navmesh_rwlock;
 	Vector<Vector3> pending_navmesh_vertices;
 	Vector<Vector<int>> pending_navmesh_polygons;
+	Vector<real_t> pending_navmesh_travel_weights;
+	Vector<real_t> pending_navmesh_enter_weights;
 
 	uint32_t iteration_id = 0;
 
@@ -101,6 +103,9 @@ public:
 
 	real_t get_surface_area() const { return surface_area; }
 	AABB get_bounds() const { return bounds; }
+
+	void set_polygon_travel_costs(const Vector<real_t> &p_polygon_travel_costs);
+	void set_polygon_enter_costs(const Vector<real_t> &p_polygon_enter_costs);
 
 	// NavBase properties.
 	virtual void set_navigation_layers(uint32_t p_navigation_layers) override;

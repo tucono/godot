@@ -40,6 +40,8 @@ class NavigationMesh : public Resource {
 
 	Vector<Vector3> vertices;
 	Vector<Vector<int>> polygons;
+	Vector<real_t> enter_weights;
+	Vector<real_t> travel_weights;
 	Ref<ArrayMesh> debug_mesh;
 
 protected:
@@ -51,8 +53,16 @@ protected:
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 #endif // DISABLE_DEPRECATED
 
+	void _reset_polygon_weights(); // Should only be called when the write lock is active
+
 	void _set_polygons(const Array &p_array);
 	Array _get_polygons() const;
+
+	void _set_polygon_enter_weights(const Array &p_array);
+	Array _get_polygon_enter_weights() const;
+
+	void _set_polygon_travel_weights(const Array &p_array);
+	Array _get_polygon_travel_weights() const;
 
 public:
 	enum SamplePartitionType {
@@ -194,10 +204,15 @@ public:
 	void set_polygons(const Vector<Vector<int>> &p_polygons);
 	Vector<Vector<int>> get_polygons() const;
 
+	void set_polygon_enter_weights(const Vector<real_t> &p_polygon_enter_weights);
+	Vector<real_t> get_polygon_enter_weights() const;
+	void set_polygon_travel_weights(const Vector<real_t> &p_polygon_travel_weights);
+	Vector<real_t> get_polygon_travel_weights() const;
+
 	void clear();
 
 	void set_data(const Vector<Vector3> &p_vertices, const Vector<Vector<int>> &p_polygons);
-	void get_data(Vector<Vector3> &r_vertices, Vector<Vector<int>> &r_polygons);
+	void get_data(Vector<Vector3> &r_vertices, Vector<Vector<int>> &r_polygons, Vector<real_t> &r_enter_weights, Vector<real_t> &r_travel_weights);
 
 #ifdef DEBUG_ENABLED
 	Ref<ArrayMesh> get_debug_mesh();
