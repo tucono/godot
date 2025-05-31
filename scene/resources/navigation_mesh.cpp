@@ -391,7 +391,7 @@ void NavigationMesh::_set_polygon_travel_weights(const Array &p_array) {
 	notify_property_list_changed();
 }
 
-Array NavigationMesh::_get_polygon_enter_weights() const {
+Array NavigationMesh::_get_polygon_travel_weights() const {
 	RWLockRead read_lock(rwlock);
 	Array ret;
 	ret.resize(travel_weights.size());
