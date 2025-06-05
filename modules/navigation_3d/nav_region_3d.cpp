@@ -148,9 +148,11 @@ void NavRegion3D::set_polygon_travel_costs(const Vector<real_t> &p_polygon_trave
 	ERR_FAIL_COND_MSG(p_polygon_travel_costs.size() != navmesh_polygons.size(), "Nav region polygon costs array must be the same size as internal polygon array");
 
 	for (int i = 0; i < navmesh_polygons.size(); i++) {
-		Nav3D::Polygon polygon = navmesh_polygons[i];
+		Nav3D::Polygon &polygon = navmesh_polygons[i];
 		polygon.travel_cost = p_polygon_travel_costs[i];
 	}
+	region_dirty = true;
+	request_sync();
 }
 
 void NavRegion3D::set_polygon_enter_costs(const Vector<real_t> &p_polygon_enter_costs) {
@@ -158,9 +160,11 @@ void NavRegion3D::set_polygon_enter_costs(const Vector<real_t> &p_polygon_enter_
 	ERR_FAIL_COND_MSG(p_polygon_enter_costs.size() != navmesh_polygons.size(), "Nav region polygon costs array must be the same size as internal polygon array");
 
 	for (int i = 0; i < navmesh_polygons.size(); i++) {
-		Nav3D::Polygon polygon = navmesh_polygons[i];
+		Nav3D::Polygon &polygon = navmesh_polygons[i];
 		polygon.enter_cost = p_polygon_enter_costs[i];
 	}
+	region_dirty = true;
+	request_sync();
 }
 
 void NavRegion3D::set_navigation_layers(uint32_t p_navigation_layers) {
@@ -259,6 +263,8 @@ void NavRegion3D::update_polygons() {
 		polygon.surface_area = 0.0;
 
 		Vector<int> navigation_mesh_polygon = pending_navmesh_polygons[navigation_mesh_polygon_index];
+		polygon.travel_cost = pending_navmesh_travel_weights[navigation_mesh_polygon_index];
+		polygon.enter_cost = pending_navmesh_enter_weights[navigation_mesh_polygon_index];
 		navigation_mesh_polygon_index += 1;
 
 		int navigation_mesh_polygon_size = navigation_mesh_polygon.size();
@@ -271,9 +277,6 @@ void NavRegion3D::update_polygons() {
 
 		polygon.vertices.resize(navigation_mesh_polygon_size);
 		polygon.edges.resize(navigation_mesh_polygon_size);
-
-		polygon.travel_cost = pending_navmesh_travel_weights[navigation_mesh_polygon_index];
-		polygon.enter_cost = pending_navmesh_enter_weights[navigation_mesh_polygon_index];
 
 		real_t _new_polygon_surface_area = 0.0;
 

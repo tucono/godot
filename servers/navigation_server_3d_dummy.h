@@ -89,6 +89,8 @@ public:
 	void region_set_transform(RID p_region, Transform3D p_transform) override {}
 	Transform3D region_get_transform(RID p_region) const override { return Transform3D(); }
 	void region_set_navigation_mesh(RID p_region, Ref<NavigationMesh> p_navigation_mesh) override {}
+	void region_set_navigation_travel_weights(RID p_region, const Array &p_weights) override {}
+	TypedArray<real_t> region_get_navigation_travel_weights(RID p_region) const override { return TypedArray<real_t>(); }
 #ifndef DISABLE_DEPRECATED
 	void region_bake_navigation_mesh(Ref<NavigationMesh> p_navigation_mesh, Node *p_root_node) override {}
 #endif // DISABLE_DEPRECATED

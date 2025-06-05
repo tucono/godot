@@ -547,6 +547,7 @@ Ref<ArrayMesh> NavigationMesh::get_debug_mesh() {
 			face_color_array.push_back(polygon_color);
 			face_color_array.push_back(polygon_color);
 		}
+		face_mesh_array[Mesh::ARRAY_COLOR] = face_color_array;
 	}
 
 	debug_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, face_mesh_array);

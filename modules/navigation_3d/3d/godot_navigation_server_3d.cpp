@@ -31,6 +31,7 @@
 #include "godot_navigation_server_3d.h"
 
 #include "core/os/mutex.h"
+#include "modules/navigation_3d/nav_utils_3d.h"
 #include "scene/main/node.h"
 
 #include "nav_mesh_generator_3d.h"
@@ -522,6 +523,31 @@ COMMAND_2(region_set_navigation_mesh, RID, p_region, Ref<NavigationMesh>, p_navi
 	ERR_FAIL_NULL(region);
 
 	region->set_navigation_mesh(p_navigation_mesh);
+}
+
+void GodotNavigationServer3D::region_set_navigation_travel_weights(RID p_region, const Array &p_weights) {
+	NavRegion3D *region = region_owner.get_or_null(p_region);
+	ERR_FAIL_NULL(region);
+
+	Vector<real_t> travel_costs;
+	travel_costs.resize(p_weights.size());
+	for (int idx = 0; idx < p_weights.size(); idx += 1) {
+		travel_costs.write[idx] = p_weights[idx];
+	}
+	region->set_polygon_travel_costs(travel_costs);
+}
+
+TypedArray<real_t> GodotNavigationServer3D::region_get_navigation_travel_weights(RID p_region) const {
+	TypedArray<real_t> r_travel_weights;
+	NavRegion3D *region = region_owner.get_or_null(p_region);
+	ERR_FAIL_NULL_V(region, r_travel_weights);
+
+	const LocalVector<Nav3D::Polygon> &polys = region->get_polygons();
+	r_travel_weights.resize(polys.size());
+	for (int idx = 0; idx < polys.size(); idx += 1) {
+		r_travel_weights[idx] = polys[idx].travel_cost;
+	}
+	return r_travel_weights;
 }
 
 #ifndef DISABLE_DEPRECATED
