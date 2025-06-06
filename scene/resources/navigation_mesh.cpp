@@ -70,7 +70,7 @@ void NavigationMesh::create_from_mesh(const Ref<Mesh> &p_mesh) {
 			polygons.push_back(polygon);
 		}
 	}
-	_reset_polygon_weights();
+	_reset_polygon_costs();
 }
 
 void NavigationMesh::set_sample_partition_type(SamplePartitionType p_value) {
@@ -321,7 +321,7 @@ void NavigationMesh::_set_polygons(const Array &p_array) {
 	for (int i = 0; i < p_array.size(); i++) {
 		polygons.write[i] = p_array[i];
 	}
-	_reset_polygon_weights();
+	_reset_polygon_costs();
 	notify_property_list_changed();
 }
 
@@ -339,7 +339,7 @@ Array NavigationMesh::_get_polygons() const {
 void NavigationMesh::set_polygons(const Vector<Vector<int>> &p_polygons) {
 	RWLockWrite write_lock(rwlock);
 	polygons = p_polygons;
-	_reset_polygon_weights();
+	_reset_polygon_costs();
 	notify_property_list_changed();
 }
 
@@ -348,88 +348,88 @@ Vector<Vector<int>> NavigationMesh::get_polygons() const {
 	return polygons;
 }
 
-void NavigationMesh::_reset_polygon_weights() {
-	enter_weights.clear();
-	travel_weights.clear();
+void NavigationMesh::_reset_polygon_costs() {
+	enter_costs.clear();
+	travel_costs.clear();
 
-	enter_weights.resize_zeroed(polygons.size());
+	enter_costs.resize_zeroed(polygons.size());
 	// Travel weights must initialize to 1.0 for distance to be correct
-	travel_weights.resize(polygons.size());
+	travel_costs.resize(polygons.size());
 	for (int i = 0; i < polygons.size(); i++) {
-		travel_weights.set(i, 1.0);
+		travel_costs.set(i, 1.0);
 	}
 }
 
-void NavigationMesh::_set_polygon_enter_weights(const Array &p_array) {
+void NavigationMesh::_set_polygon_enter_costs(const Array &p_array) {
 	ERR_FAIL_COND_MSG(p_array.size() != polygons.size(), "NavigationMesh polygon weights array must be the same size as polygons!");
 	RWLockWrite write_lock(rwlock);
-	enter_weights.resize(p_array.size());
+	enter_costs.resize(p_array.size());
 	for (int i = 0; i < p_array.size(); i++) {
-		enter_weights.write[i] = p_array[i];
+		enter_costs.write[i] = p_array[i];
 	}
 	notify_property_list_changed();
 }
 
-Array NavigationMesh::_get_polygon_enter_weights() const {
+Array NavigationMesh::_get_polygon_enter_costs() const {
 	RWLockRead read_lock(rwlock);
 	Array ret;
-	ret.resize(enter_weights.size());
+	ret.resize(enter_costs.size());
 	for (int i = 0; i < ret.size(); i++) {
-		ret[i] = enter_weights[i];
+		ret[i] = enter_costs[i];
 	}
 
 	return ret;
 }
 
-void NavigationMesh::_set_polygon_travel_weights(const Array &p_array) {
+void NavigationMesh::_set_polygon_travel_costs(const Array &p_array) {
 	ERR_FAIL_COND_MSG(p_array.size() != polygons.size(), "NavigationMesh polygon weights array must be the same size as polygons!");
 	RWLockWrite write_lock(rwlock);
-	travel_weights.resize(p_array.size());
+	travel_costs.resize(p_array.size());
 	for (int i = 0; i < p_array.size(); i++) {
-		travel_weights.write[i] = p_array[i];
+		travel_costs.write[i] = p_array[i];
 	}
 	notify_property_list_changed();
 }
 
-Array NavigationMesh::_get_polygon_travel_weights() const {
+Array NavigationMesh::_get_polygon_travel_costs() const {
 	RWLockRead read_lock(rwlock);
 	Array ret;
-	ret.resize(travel_weights.size());
+	ret.resize(travel_costs.size());
 	for (int i = 0; i < ret.size(); i++) {
-		ret[i] = travel_weights[i];
+		ret[i] = travel_costs[i];
 	}
 
 	return ret;
 }
 
-void NavigationMesh::set_polygon_enter_weights(const Vector<real_t> &p_polygon_enter_weights) {
-	ERR_FAIL_COND_MSG(p_polygon_enter_weights.size() != polygons.size(), "NavigationMesh polygon weights array must be the same size as polygons!");
+void NavigationMesh::set_polygon_enter_costs(const Vector<real_t> &p_polygon_enter_costs) {
+	ERR_FAIL_COND_MSG(p_polygon_enter_costs.size() != polygons.size(), "NavigationMesh polygon weights array must be the same size as polygons!");
 	RWLockWrite write_lock(rwlock);
-	enter_weights = p_polygon_enter_weights;
+	enter_costs = p_polygon_enter_costs;
 	notify_property_list_changed();
 }
 
-Vector<real_t> NavigationMesh::get_polygon_enter_weights() const {
+Vector<real_t> NavigationMesh::get_polygon_enter_costs() const {
 	RWLockRead read_lock(rwlock);
-	return enter_weights;
+	return enter_costs;
 }
 
-void NavigationMesh::set_polygon_travel_weights(const Vector<real_t> &p_polygon_travel_weights) {
-	ERR_FAIL_COND_MSG(p_polygon_travel_weights.size() != polygons.size(), "NavigationMesh polygon weights array must be the same size as polygons!");
+void NavigationMesh::set_polygon_travel_costs(const Vector<real_t> &p_polygon_travel_costs) {
+	ERR_FAIL_COND_MSG(p_polygon_travel_costs.size() != polygons.size(), "NavigationMesh polygon weights array must be the same size as polygons!");
 	RWLockWrite write_lock(rwlock);
-	travel_weights = p_polygon_travel_weights;
+	travel_costs = p_polygon_travel_costs;
 	notify_property_list_changed();
 }
 
-Vector<real_t> NavigationMesh::get_polygon_travel_weights() const {
+Vector<real_t> NavigationMesh::get_polygon_travel_costs() const {
 	RWLockRead read_lock(rwlock);
-	return travel_weights;
+	return travel_costs;
 }
 
 void NavigationMesh::add_polygon(const Vector<int> &p_polygon) {
 	RWLockWrite write_lock(rwlock);
 	polygons.push_back(p_polygon);
-	_reset_polygon_weights();
+	_reset_polygon_costs();
 	notify_property_list_changed();
 }
 
@@ -447,29 +447,29 @@ Vector<int> NavigationMesh::get_polygon(int p_idx) {
 void NavigationMesh::clear_polygons() {
 	RWLockWrite write_lock(rwlock);
 	polygons.clear();
-	_reset_polygon_weights();
+	_reset_polygon_costs();
 }
 
 void NavigationMesh::clear() {
 	RWLockWrite write_lock(rwlock);
 	polygons.clear();
 	vertices.clear();
-	_reset_polygon_weights();
+	_reset_polygon_costs();
 }
 
 void NavigationMesh::set_data(const Vector<Vector3> &p_vertices, const Vector<Vector<int>> &p_polygons) {
 	RWLockWrite write_lock(rwlock);
 	vertices = p_vertices;
 	polygons = p_polygons;
-	_reset_polygon_weights();
+	_reset_polygon_costs();
 }
 
-void NavigationMesh::get_data(Vector<Vector3> &r_vertices, Vector<Vector<int>> &r_polygons, Vector<real_t> &r_enter_weights, Vector<real_t> &r_travel_weights) {
+void NavigationMesh::get_data(Vector<Vector3> &r_vertices, Vector<Vector<int>> &r_polygons, Vector<real_t> &r_enter_costs, Vector<real_t> &r_travel_costs) {
 	RWLockRead read_lock(rwlock);
 	r_vertices = vertices;
 	r_polygons = polygons;
-	r_enter_weights = enter_weights;
-	r_travel_weights = travel_weights;
+	r_enter_costs = enter_costs;
+	r_travel_costs = travel_costs;
 }
 
 #ifdef DEBUG_ENABLED
@@ -525,23 +525,6 @@ Ref<ArrayMesh> NavigationMesh::get_debug_mesh() {
 
 		for (int i = 0; i < polygon_count; i++) {
 			polygon_color = debug_navigation_geometry_face_color * (Color(Math::randf(), Math::randf(), Math::randf()));
-
-			face_color_array.push_back(polygon_color);
-			face_color_array.push_back(polygon_color);
-			face_color_array.push_back(polygon_color);
-		}
-		face_mesh_array[Mesh::ARRAY_COLOR] = face_color_array;
-	} else { // TODO : MAKE SINGLETON TO VISUALIZE WEIGHTS
-		Vector<Color> face_color_array;
-		face_color_array.resize(polygon_count * 3);
-
-		real_t max_travel_weight = 0.0;
-		for (int i = 0; i < travel_weights.size(); i++) {
-			max_travel_weight = MAX(max_travel_weight, travel_weights.get(i));
-		}
-
-		for (int i = 0; i < polygon_count; i++) {
-			Color polygon_color = Color(travel_weights.get(i) / max_travel_weight, 1.0, 1.0);
 
 			face_color_array.push_back(polygon_color);
 			face_color_array.push_back(polygon_color);
@@ -670,17 +653,17 @@ void NavigationMesh::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("_set_polygons", "polygons"), &NavigationMesh::_set_polygons);
 	ClassDB::bind_method(D_METHOD("_get_polygons"), &NavigationMesh::_get_polygons);
-	ClassDB::bind_method(D_METHOD("_set_polygon_enter_weights", "polygon_enter_weights"), &NavigationMesh::_set_polygon_enter_weights);
-	ClassDB::bind_method(D_METHOD("_get_polygon_enter_weights"), &NavigationMesh::_get_polygon_enter_weights);
-	ClassDB::bind_method(D_METHOD("_set_polygon_travel_weights", "polygon_travel_weights"), &NavigationMesh::_set_polygon_travel_weights);
-	ClassDB::bind_method(D_METHOD("_get_polygon_travel_weights"), &NavigationMesh::_get_polygon_travel_weights);
+	ClassDB::bind_method(D_METHOD("_set_polygon_enter_costs", "polygon_enter_weights"), &NavigationMesh::_set_polygon_enter_costs);
+	ClassDB::bind_method(D_METHOD("_get_polygon_enter_costs"), &NavigationMesh::_get_polygon_enter_costs);
+	ClassDB::bind_method(D_METHOD("_set_polygon_travel_costs", "polygon_travel_weights"), &NavigationMesh::_set_polygon_travel_costs);
+	ClassDB::bind_method(D_METHOD("_get_polygon_travel_costs"), &NavigationMesh::_get_polygon_travel_costs);
 
 	ClassDB::bind_method(D_METHOD("clear"), &NavigationMesh::clear);
 
 	ADD_PROPERTY(PropertyInfo(Variant::PACKED_VECTOR3_ARRAY, "vertices", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "set_vertices", "get_vertices");
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "polygons", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_polygons", "_get_polygons");
-	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "enter_weights", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_polygon_enter_weights", "_get_polygon_enter_weights");
-	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "travel_weights", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_polygon_travel_weights", "_get_polygon_travel_weights");
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "enter_costs", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_polygon_enter_costs", "_get_polygon_enter_costs");
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "travel_costs", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_polygon_travel_costs", "_get_polygon_travel_costs");
 
 	ADD_GROUP("Sampling", "sample_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "sample_partition_type", PROPERTY_HINT_ENUM, "Watershed,Monotone,Layers"), "set_sample_partition_type", "get_sample_partition_type");

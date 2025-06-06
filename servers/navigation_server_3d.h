@@ -137,8 +137,11 @@ public:
 
 	virtual void region_set_navigation_mesh(RID p_region, Ref<NavigationMesh> p_navigation_mesh) = 0;
 
-	virtual void region_set_navigation_travel_weights(RID p_region, const Array &p_weights) = 0;
-	virtual TypedArray<real_t> region_get_navigation_travel_weights(RID p_region) const = 0;
+	virtual void region_set_navigation_polygon_travel_costs(RID p_region, const Array &p_costs) = 0;
+	virtual TypedArray<real_t> region_get_navigation_polygon_travel_costs(RID p_region) const = 0;
+
+	virtual void region_set_navigation_polygon_enter_costs(RID p_region, const Array &p_costs) = 0;
+	virtual TypedArray<real_t> region_get_navigation_polygon_enter_costs(RID p_region) const = 0;
 
 #ifndef DISABLE_DEPRECATED
 	virtual void region_bake_navigation_mesh(Ref<NavigationMesh> p_navigation_mesh, Node *p_root_node) = 0;

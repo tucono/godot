@@ -102,8 +102,10 @@ void NavigationServer3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("region_set_transform", "region", "transform"), &NavigationServer3D::region_set_transform);
 	ClassDB::bind_method(D_METHOD("region_get_transform", "region"), &NavigationServer3D::region_get_transform);
 	ClassDB::bind_method(D_METHOD("region_set_navigation_mesh", "region", "navigation_mesh"), &NavigationServer3D::region_set_navigation_mesh);
-	ClassDB::bind_method(D_METHOD("region_set_navigation_travel_weights", "region", "poly_travel_weights"), &NavigationServer3D::region_set_navigation_travel_weights);
-	ClassDB::bind_method(D_METHOD("region_get_navigation_travel_weights", "region"), &NavigationServer3D::region_get_navigation_travel_weights);
+	ClassDB::bind_method(D_METHOD("region_set_navigation_polygon_travel_costs", "region", "polygon_travel_costs"), &NavigationServer3D::region_set_navigation_polygon_travel_costs);
+	ClassDB::bind_method(D_METHOD("region_get_navigation_polygon_travel_costs", "region"), &NavigationServer3D::region_get_navigation_polygon_travel_costs);
+	ClassDB::bind_method(D_METHOD("region_set_navigation_polygon_enter_costs", "region", "polygon_travel_costs"), &NavigationServer3D::region_set_navigation_polygon_enter_costs);
+	ClassDB::bind_method(D_METHOD("region_get_navigation_polygon_enter_costs", "region"), &NavigationServer3D::region_get_navigation_polygon_enter_costs);
 #ifndef DISABLE_DEPRECATED
 	ClassDB::bind_method(D_METHOD("region_bake_navigation_mesh", "navigation_mesh", "root_node"), &NavigationServer3D::region_bake_navigation_mesh);
 #endif // DISABLE_DEPRECATED

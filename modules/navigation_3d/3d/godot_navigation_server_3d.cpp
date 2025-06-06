@@ -525,29 +525,54 @@ COMMAND_2(region_set_navigation_mesh, RID, p_region, Ref<NavigationMesh>, p_navi
 	region->set_navigation_mesh(p_navigation_mesh);
 }
 
-void GodotNavigationServer3D::region_set_navigation_travel_weights(RID p_region, const Array &p_weights) {
+void GodotNavigationServer3D::region_set_navigation_polygon_travel_costs(RID p_region, const Array &p_costs) {
 	NavRegion3D *region = region_owner.get_or_null(p_region);
 	ERR_FAIL_NULL(region);
 
 	Vector<real_t> travel_costs;
-	travel_costs.resize(p_weights.size());
-	for (int idx = 0; idx < p_weights.size(); idx += 1) {
-		travel_costs.write[idx] = p_weights[idx];
+	travel_costs.resize(p_costs.size());
+	for (int idx = 0; idx < p_costs.size(); idx += 1) {
+		travel_costs.write[idx] = p_costs[idx];
 	}
 	region->set_polygon_travel_costs(travel_costs);
 }
 
-TypedArray<real_t> GodotNavigationServer3D::region_get_navigation_travel_weights(RID p_region) const {
-	TypedArray<real_t> r_travel_weights;
+TypedArray<real_t> GodotNavigationServer3D::region_get_navigation_polygon_travel_costs(RID p_region) const {
+	TypedArray<real_t> r_travel_costs;
 	NavRegion3D *region = region_owner.get_or_null(p_region);
-	ERR_FAIL_NULL_V(region, r_travel_weights);
+	ERR_FAIL_NULL_V(region, r_travel_costs);
 
 	const LocalVector<Nav3D::Polygon> &polys = region->get_polygons();
-	r_travel_weights.resize(polys.size());
+	r_travel_costs.resize(polys.size());
 	for (int idx = 0; idx < polys.size(); idx += 1) {
-		r_travel_weights[idx] = polys[idx].travel_cost;
+		r_travel_costs[idx] = polys[idx].travel_cost;
 	}
-	return r_travel_weights;
+	return r_travel_costs;
+}
+
+void GodotNavigationServer3D::region_set_navigation_polygon_enter_costs(RID p_region, const Array &p_costs) {
+	NavRegion3D *region = region_owner.get_or_null(p_region);
+	ERR_FAIL_NULL(region);
+
+	Vector<real_t> enter_costs;
+	enter_costs.resize(p_costs.size());
+	for (int idx = 0; idx < p_costs.size(); idx += 1) {
+		enter_costs.write[idx] = p_costs[idx];
+	}
+	region->set_polygon_enter_costs(enter_costs);
+}
+
+TypedArray<real_t> GodotNavigationServer3D::region_get_navigation_polygon_enter_costs(RID p_region) const {
+	TypedArray<real_t> r_enter_costs;
+	NavRegion3D *region = region_owner.get_or_null(p_region);
+	ERR_FAIL_NULL_V(region, r_enter_costs);
+
+	const LocalVector<Nav3D::Polygon> &polys = region->get_polygons();
+	r_enter_costs.resize(polys.size());
+	for (int idx = 0; idx < polys.size(); idx += 1) {
+		r_enter_costs[idx] = polys[idx].enter_cost;
+	}
+	return r_enter_costs;
 }
 
 #ifndef DISABLE_DEPRECATED
