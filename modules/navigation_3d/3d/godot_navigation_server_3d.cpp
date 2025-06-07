@@ -544,7 +544,7 @@ TypedArray<real_t> GodotNavigationServer3D::region_get_navigation_polygon_travel
 
 	const LocalVector<Nav3D::Polygon> &polys = region->get_polygons();
 	r_travel_costs.resize(polys.size());
-	for (int idx = 0; idx < polys.size(); idx += 1) {
+	for (unsigned int idx = 0; idx < polys.size(); idx += 1) {
 		r_travel_costs[idx] = polys[idx].travel_cost;
 	}
 	return r_travel_costs;
@@ -569,7 +569,7 @@ TypedArray<real_t> GodotNavigationServer3D::region_get_navigation_polygon_enter_
 
 	const LocalVector<Nav3D::Polygon> &polys = region->get_polygons();
 	r_enter_costs.resize(polys.size());
-	for (int idx = 0; idx < polys.size(); idx += 1) {
+	for (unsigned int idx = 0; idx < polys.size(); idx += 1) {
 		r_enter_costs[idx] = polys[idx].enter_cost;
 	}
 	return r_enter_costs;

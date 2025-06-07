@@ -147,7 +147,7 @@ void NavRegion3D::set_polygon_travel_costs(const Vector<real_t> &p_polygon_trave
 	RWLockWrite write_lock(region_rwlock);
 	ERR_FAIL_COND_MSG(p_polygon_travel_costs.size() != navmesh_polygons.size(), "Nav region polygon costs array must be the same size as internal polygon array");
 
-	for (int i = 0; i < navmesh_polygons.size(); i++) {
+	for (unsigned int i = 0; i < navmesh_polygons.size(); i++) {
 		Nav3D::Polygon &polygon = navmesh_polygons[i];
 		polygon.travel_cost = p_polygon_travel_costs[i];
 	}
@@ -159,7 +159,7 @@ void NavRegion3D::set_polygon_enter_costs(const Vector<real_t> &p_polygon_enter_
 	RWLockWrite write_lock(region_rwlock);
 	ERR_FAIL_COND_MSG(p_polygon_enter_costs.size() != navmesh_polygons.size(), "Nav region polygon costs array must be the same size as internal polygon array");
 
-	for (int i = 0; i < navmesh_polygons.size(); i++) {
+	for (unsigned int i = 0; i < navmesh_polygons.size(); i++) {
 		Nav3D::Polygon &polygon = navmesh_polygons[i];
 		polygon.enter_cost = p_polygon_enter_costs[i];
 	}
