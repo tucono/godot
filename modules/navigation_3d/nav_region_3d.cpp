@@ -110,6 +110,8 @@ void NavRegion3D::set_navigation_mesh(Ref<NavigationMesh> p_navigation_mesh) {
 
 	pending_navmesh_vertices.clear();
 	pending_navmesh_polygons.clear();
+	pending_navmesh_enter_weights.clear();
+	pending_navmesh_travel_weights.clear();
 
 	if (p_navigation_mesh.is_valid()) {
 		p_navigation_mesh->get_data(pending_navmesh_vertices, pending_navmesh_polygons, pending_navmesh_enter_weights, pending_navmesh_travel_weights);

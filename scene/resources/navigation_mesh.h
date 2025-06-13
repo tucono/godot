@@ -53,8 +53,6 @@ protected:
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 #endif // DISABLE_DEPRECATED
 
-	void _reset_polygon_costs(); // Should only be called when the write lock is active
-
 	void _set_polygons(const Array &p_array);
 	Array _get_polygons() const;
 

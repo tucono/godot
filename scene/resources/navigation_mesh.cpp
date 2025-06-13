@@ -40,6 +40,8 @@ void NavigationMesh::create_from_mesh(const Ref<Mesh> &p_mesh) {
 
 	vertices = Vector<Vector3>();
 	polygons.clear();
+	enter_costs.clear();
+	travel_costs.clear();
 
 	for (int i = 0; i < p_mesh->get_surface_count(); i++) {
 		if (p_mesh->surface_get_primitive_type(i) != Mesh::PRIMITIVE_TRIANGLES) {
@@ -68,9 +70,10 @@ void NavigationMesh::create_from_mesh(const Ref<Mesh> &p_mesh) {
 			polygon.write[1] = r[j + 1] + from;
 			polygon.write[2] = r[j + 2] + from;
 			polygons.push_back(polygon);
+			enter_costs.push_back(0.0);
+			travel_costs.push_back(1.0);
 		}
 	}
-	_reset_polygon_costs();
 }
 
 void NavigationMesh::set_sample_partition_type(SamplePartitionType p_value) {
@@ -318,10 +321,13 @@ Vector<Vector3> NavigationMesh::get_vertices() const {
 void NavigationMesh::_set_polygons(const Array &p_array) {
 	RWLockWrite write_lock(rwlock);
 	polygons.resize(p_array.size());
+	enter_costs.resize(p_array.size());
+	travel_costs.resize(p_array.size());
 	for (int i = 0; i < p_array.size(); i++) {
 		polygons.write[i] = p_array[i];
+		enter_costs.write[i] = 0.0;
+		travel_costs.write[i] = 1.0;
 	}
-	_reset_polygon_costs();
 	notify_property_list_changed();
 }
 
@@ -339,25 +345,12 @@ Array NavigationMesh::_get_polygons() const {
 void NavigationMesh::set_polygons(const Vector<Vector<int>> &p_polygons) {
 	RWLockWrite write_lock(rwlock);
 	polygons = p_polygons;
-	_reset_polygon_costs();
 	notify_property_list_changed();
 }
 
 Vector<Vector<int>> NavigationMesh::get_polygons() const {
 	RWLockRead read_lock(rwlock);
 	return polygons;
-}
-
-void NavigationMesh::_reset_polygon_costs() {
-	enter_costs.clear();
-	travel_costs.clear();
-
-	enter_costs.resize_zeroed(polygons.size());
-	// Travel weights must initialize to 1.0 for distance to be correct
-	travel_costs.resize(polygons.size());
-	for (int i = 0; i < polygons.size(); i++) {
-		travel_costs.set(i, 1.0);
-	}
 }
 
 void NavigationMesh::_set_polygon_enter_costs(const Array &p_array) {
@@ -429,7 +422,8 @@ Vector<real_t> NavigationMesh::get_polygon_travel_costs() const {
 void NavigationMesh::add_polygon(const Vector<int> &p_polygon) {
 	RWLockWrite write_lock(rwlock);
 	polygons.push_back(p_polygon);
-	_reset_polygon_costs();
+	enter_costs.push_back(0.0);
+	travel_costs.push_back(1.0);
 	notify_property_list_changed();
 }
 
@@ -447,21 +441,30 @@ Vector<int> NavigationMesh::get_polygon(int p_idx) {
 void NavigationMesh::clear_polygons() {
 	RWLockWrite write_lock(rwlock);
 	polygons.clear();
-	_reset_polygon_costs();
+	enter_costs.clear();
+	travel_costs.clear();
 }
 
 void NavigationMesh::clear() {
 	RWLockWrite write_lock(rwlock);
 	polygons.clear();
+	enter_costs.clear();
+	travel_costs.clear();
 	vertices.clear();
-	_reset_polygon_costs();
 }
 
 void NavigationMesh::set_data(const Vector<Vector3> &p_vertices, const Vector<Vector<int>> &p_polygons) {
 	RWLockWrite write_lock(rwlock);
 	vertices = p_vertices;
 	polygons = p_polygons;
-	_reset_polygon_costs();
+
+	// Reset travel/enter costs for polygons
+	travel_costs.resize(p_polygons.size());
+	enter_costs.resize(p_polygons.size());
+	for (int i = 0; i < polygons.size(); i++) {
+		travel_costs.write[i] = 1.0;
+		enter_costs.write[i] = 0.0;
+	}
 }
 
 void NavigationMesh::get_data(Vector<Vector3> &r_vertices, Vector<Vector<int>> &r_polygons, Vector<real_t> &r_enter_costs, Vector<real_t> &r_travel_costs) {
